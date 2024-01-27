@@ -1,0 +1,552 @@
+\documentclass[7pt]{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage[T1]{fontenc}
+
+%Decrease margins
+\usepackage[margin=0.5in]{geometry}
+
+\title{DBMS_ER}
+\author{Sourodeep Datta}
+\date{January 2024}
+
+%Remove section numbering
+\makeatletter
+\renewcommand{\@seccntformat}[1]{}
+\makeatother
+
+\begin{document}
+
+{\centering
+    \textbf{\LARGE{Report}} \\
+}
+\vspace{0.5cm}
+
+\section{\Large{Schema}}
+
+\begin{center}
+\begin{tabular}{|p{8cm} | p{10cm}|}
+    \hline
+    \vspace{2pt} Schemas & \vspace{2pt} Foreign Keys \\
+    \vspace{2pt}
+    \textit{college(\underline{name}, {location})} & \vspace{2pt} -\\
+    \vspace{2pt}
+    \textit{participant(\underline{pid}, name)} & \vspace{2pt} -\\
+    \vspace{2pt}
+    \textit{volunteer(\underline{roll})} & \vspace{2pt} -\\
+    \vspace{2pt}
+    \textit{event(\underline{eid}, date, ename, type)} & \vspace{2pt} -\\
+    \vspace{2pt}
+    \textit{student(\underline{roll}, name, dept)} & \vspace{2pt} -\\
+    \vspace{2pt}
+    \textit{role(\underline{rid}, rname, description)} & \vspace{2pt} -\\
+    \vspace{2pt}
+    \textit{student\_from(college\_name, \underline{\smash{pid}})} & \vspace{2pt} \text{college\_name -{\textgreater} college\_name, pid -{\textgreater} participant\_pid} \\
+    \vspace{2pt}
+    \textit{participant\_has(\underline{\smash{pid}}, \underline{\smash{eid}})} & \vspace{2pt} \text{pid -{\textgreater} participant\_pid, eid -{\textgreater} event\_eid} \\
+    \vspace{2pt}
+    \textit{volunteer\_has(\underline{\smash{roll}}, \underline{\smash{eid}})} & \vspace{2pt} \text{roll -{\textgreater} volunteer\_roll, eid -{\textgreater} event\_eid} \\
+    \vspace{2pt}
+    \textit{manage(\underline{roll}, \underline{eid})} & \vspace{2pt} \text{roll -{\textgreater} student\_roll, eid -{\textgreater} event\_eid} \\
+    \vspace{2pt}
+    \textit{student\_has(\underline{roll}, \underline{rid})} & \vspace{2pt} \text{roll -{\textgreater} student\_roll, rid -{\textgreater} role\_rid} \\
+    \hline
+    \end{tabular}
+\end{center}
+
+\begin{flushleft}
+\textit{\underline{Underlined} attributes are Primary Keys.}
+\end{flushleft}
+
+\subsection{\text{Table \& Attribute Definitions}}
+\begin{itemize}
+    \item college ( \\
+    name varchar(511) primary key, \\
+    location varchar(2047) not null \\
+    )
+
+    \item participant ( \\
+    pid varchar(20) primary key, \\
+    name varchar(255) not null \\
+    )
+
+    \item volunteer ( \\
+    roll varchar(20) primary key\\
+    )
+
+    \item event ( \\
+    eid varchar(20) primary key,    \\
+    date DATE not null,     \\
+    ename varchar(255) not null,    \\
+    type varchar(255)   \\
+    )
+
+    \item student ( \\
+    roll varchar(20) primary key,   \\
+    name varchar(255) not null, \\
+    dept varchar(255) not null \\
+    )
+
+\newpage
+
+    \item role (    \\
+    rid varchar(20) primary key,       \\
+    rname varchar(255) not null,    \\
+    description varchar(255)    \\
+    )
+
+    \item student\_from (  \\
+    college\_name varchar(255),  \\
+    pid varchar(20),    \\
+    foreign key (college\_name) references college(name),    \\
+    foreign key (pid) references participant(pid),  \\
+    primary key (college\_name, pid)     \\
+    )
+
+    \item participant\_has (     \\
+    pid varchar(20),        \\
+    eid varchar(20),        \\
+    foreign key (pid) references participant(pid),      \\
+    foreign key (eid) references event(eid),     \\
+    primary key (pid, eid)  \\
+    )
+
+    \item volunteer\_has (   \\
+    roll varchar(20),   \\
+    eid varchar(20),        \\
+    foreign key (roll) references volunteer(roll),  \\
+    foreign key (eid) references event(eid),        \\
+    primary key (roll, eid) \\
+    )  
+
+    \item manage (     \\
+    roll varchar(20),   \\
+    eid varchar(20),    \\
+    foreign key (roll) references student(roll),    \\
+    foreign key (eid) references event(eid), \\
+    primary key (roll, eid) \\
+    )
+
+    \item student\_has (     \\
+    roll varchar(20),   \\
+    rid varchar(20),        \\
+    foreign key (roll) references student(roll),    \\
+    foreign key (rid) references role(rid),      \\
+    primary key (roll, rid) \\
+    )
+\end{itemize}
+
+\begin{flushleft}
+    \textit{Primary keys are implicitly not null.}
+\end{flushleft}
+
+\newpage
+
+\section{\Large{Commands}}
+
+\subsection{\text{Create Tables \& Insert Data}}
+
+\begin{itemize}
+    \item -- Create college table   \\
+CREATE TABLE college (              \\
+    name VARCHAR(511) PRIMARY KEY,  \\
+    location VARCHAR(2047) NOT NULL \\
+);  \vspace{2pt}
+
+-- Insert sample data               \\
+INSERT INTO college (name, location) VALUES     \\
+    ('IITB', 'Mumbai'), \\
+    ('MIT', 'Cambridge'),   \\
+    ('Stanford', 'Palo Alto'),  \\
+    ('Harvard', 'Cambridge'),   \\
+    ('Caltech', 'Pasadena');
+
+    \item -- Create participant table   \\
+    CREATE TABLE participant (      \\
+        pid VARCHAR(20) PRIMARY KEY,    \\
+        name VARCHAR(255) NOT NULL  \\
+    );  \vspace{2pt}
+    
+    -- Insert sample data   \\
+    INSERT INTO participant (pid, name) VALUES  \\
+        ('P001', 'John Doe'),   \\
+        ('P002', 'Jane Smith'), \\
+        ('P003', 'Michael Johnson'),    \\
+        ('P004', 'Emily Brown'),    \\
+        ('P005', 'Robert Davis');
+
+    \item -- Create volunteer table \\
+    CREATE TABLE volunteer (    \\
+        roll VARCHAR(20) PRIMARY KEY    \\
+    );  \vspace{2pt}
+    
+    -- Insert sample data   \\
+    INSERT INTO volunteer (roll) VALUES \\
+        ('V001'),   \\
+        ('V002'),   \\
+        ('V003'),   \\
+        ('V004'),   \\
+        ('V005');
+    
+    \item -- Create event table \\
+    CREATE TABLE event (    \\
+        eid VARCHAR(20) PRIMARY KEY,    \\
+        date DATE NOT NULL, \\
+        ename VARCHAR(255) NOT NULL,    \\
+        type VARCHAR(255)   \\
+    );  \vspace{2pt}
+    
+    -- Insert sample data   \\
+    INSERT INTO event (eid, date, ename, type) VALUES   \\
+        ('E001', '2024-02-01', 'Megaevent', 'Conference'),  \\
+        ('E002', '2024-02-15', 'Tech Symposium', 'Symposium'),  \\
+        ('E003', '2024-03-05', 'Sports Fest', 'Sports'),    \\
+        ('E004', '2024-04-10', 'Cultural Night', 'Cultural'),   \\
+        ('E005', '2024-05-20', 'Workshop Series', 'Workshop'); 
+
+\newpage
+
+    \item -- Create student table   \\
+    CREATE TABLE student (              \\
+        roll VARCHAR(20) PRIMARY KEY,   \\
+        name VARCHAR(255) NOT NULL, \\
+        dept VARCHAR(255) NOT NULL  \\
+    );  \vspace{2pt}
+    
+    -- Insert sample data   \\
+    INSERT INTO student (roll, name, dept) VALUES   \\
+        ('S001', 'Alice Johnson', 'CSE'),   \\
+        ('S002', 'Bob Smith', 'ECE'),   \\
+        ('S003', 'Charlie Brown', 'Mechanical'),    \\
+        ('S004', 'Diana Davis', 'Chemical'),    \\
+        ('S005', 'Edward White', 'Civil');
+
+    \item -- Create role table  \\
+    CREATE TABLE role ( \\
+        rid VARCHAR(20) PRIMARY KEY,    \\
+        rname VARCHAR(255) NOT NULL,    \\
+        description VARCHAR(255)    \\
+    );  \vspace{2pt}
+    
+    -- Insert sample data   \\
+    INSERT INTO role (rid, rname, description) VALUES   \\
+        ('R001', 'Secretary', 'Manages administrative tasks'),  \\
+        ('R002', 'Treasurer', 'Handles financial matters'), \\
+        ('R003', 'President', 'Leads and oversees the organization'),   \\
+        ('R004', 'Event Coordinator', 'Plans and coordinates events'),  \\
+        ('R005', 'Public Relations Officer', 'Manages public relations and communications');
+
+    \item -- Create student\_from table \\
+    CREATE TABLE student\_from ( \\
+        college\_name VARCHAR(255), \\
+        pid VARCHAR(20),    \\
+        PRIMARY KEY (college\_name, pid),   \\
+        FOREIGN KEY (college\_name) REFERENCES college(name),   \\
+        FOREIGN KEY (pid) REFERENCES participant(pid)   \\
+    );  \vspace{2pt}
+    
+    -- Insert sample data   \\
+    INSERT INTO student\_from (college\_name, pid) VALUES \\
+        ('IITB', 'P001'),   \\
+        ('MIT', 'P002'),    \\
+        ('Stanford', 'P003'),   \\
+        ('Harvard', 'P004'),    \\
+        ('Caltech', 'P005');
+
+    \item -- Create participant\_has table   \\
+    CREATE TABLE participant\_has ( \\
+        pid VARCHAR(20),    \\
+        eid VARCHAR(20),    \\
+        PRIMARY KEY (pid, eid), \\
+        FOREIGN KEY (pid) REFERENCES participant(pid),  \\
+        FOREIGN KEY (eid) REFERENCES event(eid) \\
+    );  \vspace{2pt}
+
+    -- Insert sample data   \\
+    INSERT INTO participant\_has (pid, eid) VALUES  \\
+        ('P001', 'E001'),   \\
+        ('P002', 'E002'),   \\
+        ('P003', 'E003'),   \\
+        ('P004', 'E004'),   \\
+        ('P005', 'E005');
+    
+    \newpage
+
+    \item -- Create volunteer\_has table \\
+CREATE TABLE volunteer\_has (    \\
+    roll VARCHAR(20),   \\
+    eid VARCHAR(20),    \\
+    PRIMARY KEY (roll, eid),    \\
+    FOREIGN KEY (roll) REFERENCES volunteer(roll),  \\
+    FOREIGN KEY (eid) REFERENCES event(eid) \\
+);  \vspace{2pt}
+
+-- Insert sample data   \\
+INSERT INTO volunteer\_has (roll, eid) VALUES   \\
+    ('V001', 'E001'),   \\
+    ('V002', 'E002'),   \\
+    ('V003', 'E003'),   \\
+    ('V004', 'E004'),   \\
+    ('V005', 'E005');
+
+    \item -- Create manage table    \\
+    CREATE TABLE manage (   \\
+        roll VARCHAR(20),   \\
+        eid VARCHAR(20),    \\
+        PRIMARY KEY (roll, eid),    \\
+        FOREIGN KEY (roll) REFERENCES student(roll),    \\
+        FOREIGN KEY (eid) REFERENCES event(eid) \\
+    );  \vspace{2pt}
+    
+    -- Insert sample data   \\
+    INSERT INTO manage (roll, eid) VALUES   \\
+        ('S001', 'E001'),   \\
+        ('S002', 'E002'),   \\
+        ('S003', 'E003'),   \\
+        ('S004', 'E004'),   \\
+        ('S005', 'E005');
+
+    \item -- Create student\_has table  \\
+    CREATE TABLE student\_has (  \\
+        roll VARCHAR(20),   \\
+        rid VARCHAR(20),    \\
+        PRIMARY KEY (roll, rid),    \\
+        FOREIGN KEY (roll) REFERENCES student(roll),    \\
+        FOREIGN KEY (rid) REFERENCES role(rid)  \\
+    ); \vspace{2pt}
+    
+    -- Insert sample data   \\
+    INSERT INTO student\_has (roll, rid) VALUES \\
+        ('S001', 'R001'),   \\
+        ('S002', 'R002'),   \\
+        ('S003', 'R003'),   \\
+        ('S004', 'R004'),   \\
+        ('S005', 'R005');
+\end{itemize}
+
+\newpage
+
+\subsection{\text{Queries \& Responses}}
+
+%A table of queries and responses, left column should contain the query and right column should contain the response.
+
+\begin{itemize}
+    \item -- Query 1 \\
+    SELECT Student.Roll, Student.Name   \\
+    FROM Student    \\
+    JOIN MANAGE ON Student.Roll = MANAGE.Roll   \\
+    JOIN Event ON MANAGE.EID = Event.EID    \\
+    WHERE Event.EName = 'Megaevent';    \vspace{2pt}
+
+    -- Relational Algebra \\
+    $\pi_{Student.Roll, Student.Name}(\sigma_{Event.EName = 'Megaevent'}(Student \bowtie MANAGE \bowtie Event))$ \vspace{2pt}
+    
+    -- Response 1 \\
+    \begin{tabular}{|c|c|}
+        \hline
+        roll & name \\
+        \hline
+        S001 & Alice Johnson \\
+        \hline
+    \end{tabular}
+
+    \item -- Query 2 \\
+    SELECT Student.Roll, Student.Name   \\
+    FROM Student    \\
+    JOIN MANAGE ON Student.Roll = MANAGE.Roll   \\
+    JOIN Event ON MANAGE.EID = Event.EID    \\
+    JOIN Role ON MANAGE.Roll = Role.RID \\
+    WHERE Event.EName = 'Megaevent' AND Role.Rname = 'Secretary'; \vspace{2pt}
+
+    -- Relational Algebra \\
+    $\pi_{Student.Roll, Student.Name}(\sigma_{Event.EName = 'Megaevent' \wedge Role.Rname = 'Secretary'}(Student \bowtie MANAGE \bowtie Event \bowtie Role))$ \vspace{2pt}
+    
+    -- Response 2 \\
+    \begin{tabular}{|c|c|}
+        \hline
+        roll & name \\
+        \hline
+    \end{tabular} \\
+    (0 rows)
+
+    \item -- Query 3 \\
+    SELECT Participant.Name \\
+    FROM Participant    \\
+    JOIN Student\_FROM ON Participant.PID = Student\_FROM.PID \\
+    JOIN College ON Student\_FROM.College\_Name = College.Name    \\
+    JOIN Participant\_HAS ON Participant.PID = Participant\_HAS.PID   \\
+    JOIN Event ON Participant\_HAS.EID = Event.EID   \\
+    WHERE College.Name = 'IIT Bombay' AND Event.EName = 'Megaevent'; \vspace{2pt}
+
+    -- Relational Algebra \\
+    $\pi_{Participant.Name}(\sigma_{College.Name = 'IIT Bombay' \wedge Event.EName = 'Megaevent'}(Participant \bowtie Student\_FROM \bowtie College \bowtie Participant\_HAS \bowtie Event))$ \vspace{2pt}
+    
+    -- Response 3 \\
+    \begin{tabular}{|c|}
+        \hline
+        name    \\
+        \hline
+    \end{tabular} \\
+    (0 rows)
+
+    \item -- Query 4 \\
+    SELECT DISTINCT College.Name    \\
+    FROM College    \\
+    JOIN Student\_FROM ON College.Name = Student\_FROM.College\_Name   \\
+    JOIN Participant\_HAS ON Student\_FROM.PID = Participant\_HAS.PID  \\
+    JOIN Event ON Participant\_HAS.EID = Event.EID   \\
+    WHERE Event.EName = 'Megaevent';    \vspace{2pt}
+
+    -- Relational Algebra \\
+    $\pi_{College.Name}(\sigma_{Event.EName = 'Megaevent'}(College \bowtie Student\_FROM \bowtie Participant\_HAS \bowtie Event))$ \vspace{2pt}
+    
+    -- Response 4 \\
+    \begin{tabular}{|c|}
+        \hline
+        name \\
+        \hline
+        IITB \\
+        \hline
+    \end{tabular}
+
+    \newpage
+
+    \item -- Query 5 \\
+    SELECT DISTINCT Event.EName \\
+    FROM Event  \\
+    JOIN MANAGE ON Event.EID = MANAGE.EID   \\
+    JOIN Student ON MANAGE.Roll = Student.Roll  \\
+    JOIN Role ON MANAGE.Roll = Role.RID \\
+    WHERE Role.Rname = 'Secretary';     \vspace{2pt}
+
+    -- Relational Algebra \\
+    $\pi_{Event.EName}(\sigma_{Role.Rname = 'Secretary'}(Event \bowtie MANAGE \bowtie Student \bowtie Role))$ \vspace{2pt}
+
+    -- Response 5 \\
+    \begin{tabular}{|c|}
+        \hline
+        ename \\
+        \hline
+    \end{tabular} \\
+    (0 rows)
+
+    \item -- Query 6 \\
+    SELECT DISTINCT Student.Name    \\
+    FROM Student    \\
+    JOIN Student\_HAS ON Student.Roll = Student\_HAS.Roll \\
+    JOIN Role ON Student\_HAS.RID = Role.RID \\
+    JOIN Volunteer ON Student.Roll = Volunteer.Roll \\
+    JOIN Volunteer\_HAS ON Volunteer.Roll = Volunteer\_HAS.Roll   \\
+    JOIN Event ON Volunteer\_HAS.EID = Event.EID \\
+    WHERE Student.Dept = 'CSE' AND Event.EName = 'Megaevent';   \vspace{2pt}
+
+    -- Relational Algebra \\
+    $\pi_{Student.Name}(\sigma_{Student.Dept = 'CSE' \wedge Event.EName = 'Megaevent'}(Student \bowtie Student\_HAS \bowtie Role \bowtie Volunteer \bowtie \\ Volunteer\_HAS \bowtie Event))$ \vspace{2pt}
+
+    -- Response 6 \\
+    \begin{tabular}{|c|}
+        \hline
+        name \\
+        \hline
+    \end{tabular} \\
+    (0 rows)
+
+    \item -- Query 7 \\
+    SELECT DISTINCT Event.EName \\
+    FROM Event  \\
+    JOIN Volunteer\_HAS ON Event.EID = Volunteer\_HAS.EID \\
+    JOIN Volunteer ON Volunteer\_HAS.Roll = Volunteer.Roll   \\
+    JOIN Student ON Volunteer.Roll = Student.Roll   \\
+    WHERE Student.Dept = 'CSE'; \vspace{2pt}
+
+    -- Relational Algebra \\
+    $\pi_{Event.EName}(\sigma_{Student.Dept = 'CSE'}(Event \bowtie Volunteer\_HAS \bowtie Volunteer \bowtie Student))$ \vspace{2pt}
+
+    -- Response 7 \\
+    \begin{tabular}{|c|}
+        \hline
+        ename \\
+        \hline
+    \end{tabular} \\
+    (0 rows)
+
+    \item -- Query 8 \\
+    SELECT College.Name \\
+    FROM College    \\
+    JOIN Student\_FROM ON College.Name = Student\_FROM.College\_Name   \\
+    JOIN Participant\_HAS ON Student\_FROM.PID = Participant\_HAS.PID  \\
+    JOIN Event ON Participant\_HAS.EID = Event.EID   \\
+    WHERE Event.EName = 'Megaevent' \\
+    GROUP BY College.Name   \\
+    ORDER BY COUNT(Participant\_HAS.PID) DESC    \\
+    LIMIT 1;    \vspace{2pt}
+
+    -- Relational Algebra \\
+    $\pi_{College.Name}(\sigma_{Event.EName = 'Megaevent'}(College \bowtie Student\_FROM \bowtie Participant\_HAS \bowtie Event))$ \vspace{2pt}
+
+    -- Response 8 \\
+    \begin{tabular}{|c|}
+        \hline
+        name \\
+        \hline
+        IITB \\
+        \hline
+    \end{tabular}
+
+    \newpage
+
+    \item -- Query 9 \\
+    SELECT College.Name \\
+    FROM College    \\
+    JOIN Student\_FROM ON College.Name = Student\_FROM.College\_Name   \\
+    JOIN Participant\_HAS ON Student\_FROM.PID = Participant\_HAS.PID  \\
+    GROUP BY College.Name   \\
+    ORDER BY COUNT(Participant\_HAS.PID) DESC    \\
+    LIMIT 1;    \vspace{2pt}
+
+    -- Relational Algebra \\
+    $\pi_{College.Name}(College \bowtie Student\_FROM \bowtie Participant\_HAS)$ \vspace{2pt}
+
+    -- Response 9 \\
+    \begin{tabular}{|c|}
+        \hline
+        name \\
+        \hline
+        Harvard \\
+        \hline
+    \end{tabular}
+
+    \item -- Query 10 \\
+    SELECT Student.Dept \\
+    FROM Student    \\
+    JOIN Student\_HAS ON Student.Roll = Student\_HAS.Roll \\
+    JOIN Volunteer ON Student.Roll = Volunteer.Roll \\
+    JOIN Volunteer\_HAS ON Volunteer.Roll = Volunteer\_HAS.Roll   \\
+    JOIN Event ON Volunteer\_HAS.EID = Event.EID \\
+    WHERE Event.EID IN (    \\
+        SELECT DISTINCT Participant\_HAS.EID \\
+        FROM Participant\_HAS    \\
+        JOIN Student\_FROM ON Participant\_HAS.PID = Student\_FROM.PID \\
+        WHERE Student\_FROM.College\_Name = 'IITB'    \\
+    ) \\
+    GROUP BY Student.Dept   \\
+    ORDER BY COUNT(Volunteer\_HAS.Roll) DESC \\
+    LIMIT 1;    \vspace{2pt}
+
+    -- Relational Algebra \\
+    $\pi_{Student.Dept}(\sigma_{Event.EID \in (\pi_{Participant\_HAS.EID}(\sigma_{Student\_FROM.College\_Name = 'IITB'}(Participant\_HAS \bowtie \\ Student\_FROM)))}(Student \bowtie Student\_HAS \bowtie Volunteer \bowtie Volunteer\_HAS \bowtie Event))$ \vspace{2pt}
+
+    -- Response 10 \\
+    \begin{tabular}{|c|}
+        \hline
+        dept \\
+        \hline
+    \end{tabular} \\
+    (0 rows)
+\end{itemize}
+
+\begin{flushleft}
+    \textit{Note: Some of the Queries do not have equivalent Relational Algebra expressions. In these cases, the closest possible expression has been provided.}
+\end{flushleft}
+
+\end{document}
