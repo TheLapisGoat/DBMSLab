@@ -177,12 +177,13 @@ JOIN MANAGE ON Student.Roll = MANAGE.Roll
 JOIN Event ON MANAGE.EID = Event.EID
 WHERE Event.EName = 'Megaevent';
 
--- Query 2: Roll number and name of all the students who are managing “Megevent” as an “Secretary”
+-- Query 2: Roll number and name of all the students who are managing “Megevent” as a “Secretary”
 SELECT Student.Roll, Student.Name
 FROM Student
 JOIN MANAGE ON Student.Roll = MANAGE.Roll
 JOIN Event ON MANAGE.EID = Event.EID
-JOIN Role ON MANAGE.Roll = Role.RID
+JOIN Student_HAS ON Student_HAS.Roll = Student.Roll
+JOIN Role ON Student_HAS.RID = Role.RID
 WHERE Event.EName = 'Megaevent' AND Role.Rname = 'Secretary';
 
 -- Query 3: Name of all the participants from the college “IITB” in “Megaevent”
@@ -207,14 +208,13 @@ SELECT DISTINCT Event.EName
 FROM Event
 JOIN MANAGE ON Event.EID = MANAGE.EID
 JOIN Student ON MANAGE.Roll = Student.Roll
-JOIN Role ON MANAGE.Roll = Role.RID
+JOIN Student_HAS ON Student.Roll = Student_HAS.Roll
+JOIN Role ON Student_HAS.RID = Role.RID
 WHERE Role.Rname = 'Secretary';
 
 -- Query 6: Name of all the “CSE” department student volunteers of “Megaevent”
 SELECT DISTINCT Student.Name
 FROM Student
-JOIN Student_HAS ON Student.Roll = Student_HAS.Roll
-JOIN Role ON Student_HAS.RID = Role.RID
 JOIN Volunteer ON Student.Roll = Volunteer.Roll
 JOIN Volunteer_HAS ON Volunteer.Roll = Volunteer_HAS.Roll
 JOIN Event ON Volunteer_HAS.EID = Event.EID
@@ -251,7 +251,6 @@ LIMIT 1;
 -- Query 10: Name of the department with the largest number of volunteers in all the events which has at least one participant from “IITB”
 SELECT Student.Dept
 FROM Student
-JOIN Student_HAS ON Student.Roll = Student_HAS.Roll
 JOIN Volunteer ON Student.Roll = Volunteer.Roll
 JOIN Volunteer_HAS ON Volunteer.Roll = Volunteer_HAS.Roll
 JOIN Event ON Volunteer_HAS.EID = Event.EID
