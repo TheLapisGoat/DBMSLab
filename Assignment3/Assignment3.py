@@ -1,5 +1,4 @@
 import psycopg2
-import getpass
 
 def menu_options():
     print (
